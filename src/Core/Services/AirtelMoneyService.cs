@@ -44,21 +44,24 @@ namespace Core.Services
 
         public bool IsDeposit()
         {
-                        // sample messages for the regex below
-                        // var message = @" Trans ID: CI200808.0942.H11201: you have received MK20000.00 from BT59687, CHIMWEMWE MUGHOGHO. your new balance is MK20020.41.Note that Cash In is free of charge";
-                        // var message2 = "trans.ID :  PP200705.1009.H42097. Dear customer, you have received MK 6000.00 from 999025907,PRINCE CHIKWEBA . Your available balance is MK 6020.41.Trans id";
-                        // var message3 = "Dear Customer, money transfer to 999057130, ELIZABETH JERE is successful, Trans Id: PP200815.0822.G60250,Trans Amt: MK2000.00. Your available balance MK110.41";
+                      /* sample messages for the regex below
+                        var message = @" Trans ID: CI200808.0942.H11201: you have received MK20000.00 from BT59687, CHIMWEMWE MUGHOGHO. your new balance is MK20020.41.Note that Cash In is free of charge";
+                        var message2 = "trans.ID :  PP200705.1009.H42097. Dear customer, you have received MK 6000.00 from 999025907,PRINCE CHIKWEBA . Your available balance is MK 6020.41.Trans id";
+                        var message3 = "Dear Customer, money transfer to 999057130, ELIZABETH JERE is successful, Trans Id: PP200815.0822.G60250,Trans Amt: MK2000.00. Your available balance MK110.41";
 
-                        //other regex added for other functions 
+                        */
                         
-                        var findTrans = new Regex(@"([tT]rans ID: |[Tt]rans.ID|Trans Id:|Dear Customer)");
+                        var findFirst = new Regex(@"(^( [tT]rans ID: |[tT]rans ID: |[Tt]rans.ID|Trans Id:|Dear Customer))");
+                        var airtimeRegex = new Regex(@"[aA]irtime");
+                        var findReceived = new Regex(@"(\b(money transfer)|(you have received)\b)");
                         var transIdRegex = new Regex(@"(?<=([tT]rans.ID :)|([tT]rans ID:|Trans Id:))(.*?)(?=([dD]|[yY]|:|,))");
                         var amountRegex = new Regex(@"((?<=(Amt: MK |received MK|Trans Amt: MK))(.*?)(?=\.|[yY]|f))");
                         var senderRegex = new Regex(@"(?<=(from |to ))(.*?)(?=\.|is)");
                        
 
-
-                        var trans = findTrans.Match(_message).ToString();
+                        var firstWord = findFirst.Match(_message).ToString().ToLower();
+                        var receivedMessage = findReceived.Match(_message).ToString();
+                        var airtime = airtimeRegex.Match(_message).ToString();
                         var transId = transIdRegex.Match(_message).ToString().Trim();
                         var amount = amountRegex.Match(_message).ToString().Trim();
                         var sender = senderRegex.Match(_message).ToString().Trim();
@@ -67,19 +70,20 @@ namespace Core.Services
                         var number = numberName[0];
                         var name = numberName[1].Trim();
                         
-                        
-                        
+                        /* simple deposit for airtel check for trans at begining or dear customer and you have received or monrey transfer to Dali's or airtel money account number
+                        other checks for amount and sender not necessary at this stage, 
+                        */
 
-                        Console.WriteLine(trans + " " + transId + " " + amount + " " + sender + " " + number + " " + name);
 
-                        //test for airtel trans id and dear customer only in airtel messages
+                        /*test for airtel trans id and dear customer only in airtel messages and no airtime */
                          
-                        if(trans != "")
+                        if(firstWord != "" && receivedMessage != "" && airtime == "")
                         {
                             return true;
                         }
                         else 
                             return false;
+
         }
     }
 }
