@@ -75,7 +75,7 @@ namespace Core.Services
                         */
 
 
-                        /*test for airtel trans id and dear customer only in airtel messages and no airtime */
+                        /* test for airtel trans id and dear customer only in airtel messages and no airtime */
                          
                          if(firstWord == "dear customer" && receivedMessage != "" && name == "Dali Mizaya")
                        {
